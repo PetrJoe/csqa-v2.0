@@ -47,8 +47,3 @@ else
     python3 manage.py createsuperuser --username="$SUPERUSER_USERNAME" --email="$SUPERUSER_EMAIL" --noinput
     echo "from accounts.models import User; user = User.objects.get(username='$SUPERUSER_USERNAME'); user.set_password('$SUPERUSER_PASSWORD'); user.save()" | python3 manage.py shell
     echo "Superuser '$SUPERUSER_USERNAME' created successfully."
-<<<<<<< HEAD
-fi
-=======
-fi
->>>>>>> 5421770080d9330f2433bb29cce80d285f10f71b
