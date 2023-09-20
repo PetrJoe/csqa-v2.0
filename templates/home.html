@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+  <div id="app">
+    <div style="margin-top: 20px;">
+        {% for question in page_obj %}
+            <div class="w-full px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+                <p class="mb-4 text-gray-600 dark:text-gray-400">
+                    {{question.body | truncatewords:60 | urlize }}<br>
+                    <a href="/question/{{question.id}}">Read More <small class="text-secondary num-answers">({{ question.num_answers }} comments)</small></a>
+                </p>
+                <p class="text-gray-600 dark:text-gray-400">
+                    Posted by {{ question.user }} | {{ question.x_ago }}
+                </p>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="w-full overflow-hidden rounded-lg shadow-xs">
+        <div class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
+          <span class="flex items-center col-span-3">
+            Showing {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          </span>
+          <span class="col-span-2"></span>
+          <!-- Pagination -->
+          <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
+            <nav aria-label="Table navigation">
+              <ul class="inline-flex items-center">
+                <li>
+                  {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" type="button" class="px-3 py-1 rounded-md rounded-l-lg focus:outline-none focus:shadow-outline-purple" aria-label="Previous">
+                      &laquo; Previous
+                    </a>
+                  {% endif %}
+                  </li>
+                <li>
+                  {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" type="button" class="px-3 py-1 rounded-md rounded-r-lg focus:outline-none focus:shadow-outline-purple" aria-label="Next">
+                      Next &raquo;
+                    </a>
+                  {% endif %}
+                </li>
+              </ul>
+            </nav>
+          </span>
+        </div>
+    </div>
+  </div>
+{% endblock %}

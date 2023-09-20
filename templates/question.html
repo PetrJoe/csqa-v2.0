@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}{{question.title}} | VibrantCoder{% endblock %}
+{% block content %}
+<div id="app">
+
+  
+  <div class="container px-6 mx-auto grid mt-8">
+    <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+      
+      <p class="text-sm text-gray-600 dark:text-gray-400">
+        <div id="question">
+          <div class="flex items-center text-sm">
+            <!-- Avatar with inset shadow -->
+            <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
+              <img class="object-cover w-full h-full rounded-full" src="https://images.unsplash.com/flagged/photo-1570612861542-284f4c12e75f?ixlib=rb-1.2.1&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=200&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjE3Nzg0fQ" alt="" loading="lazy">
+              <div class="absolute inset-0 rounded-full shadow-inner" aria-hidden="true"></div>
+            </div>
+            <div>
+              <p class="font-semibold text-gray-600 dark:text-gray-400">{{ question.user.first_name }} {{ question.user.last_name }}</p>
+              <p class="text-xs text-gray-600 dark:text-gray-400">
+                {{ question.user.username }}
+              </p>
+            </div>
+          </div>
+
+        <h5 class="inline-flex text-xl text-gray-600 dark:text-gray-400 items-center w-full font-semibold transition-colors duration-150">{{question.title}}</h5>
+        <div class="mb-4 text-gray-600 dark:text-gray-400">{{question.body | urlize }}</div>
+        <div class="flex justify-left mt-4 space-x-3 text-sm text-gray-600 dark:text-gray-400">
+            <span> By </span> 
+            <span>{{ question.x_ago }}</span>
+          {% if not asked_by_user %}
+            <a href="javascript:void(0)" v-on:click="vote('upvote', upvoted, '/question/{{question.id}}/vote')" :class="[[upvoted ? 'done' : '']]" class="text-secondary">upvote</a>
+            <a href="javascript:void(0)" v-on:click="vote('downvote', downvoted, '/question/{{question.id}}/vote')" :class="[[downvoted ? 'done' : '']]" class="text-secondary">downvote</a>
+          {% endif %}
+          <span>[[points]] points</span>
+        </div>
+        <answer
+          v-for="answer in answers"
+          v-bind:key="answer.id"
+          v-bind:answer="answer"
+        ></answer>
+
+        <hr class='answer-hr'/>
+        {% if current_user.is_authenticated %}
+        <form action="/question/{{question.id}}/answer" method="post">
+          {% csrf_token %}    
+          <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+            <label class="block mt-4 text-sm">
+              <div class="relative text-gray-500 focus-within:text-purple-600">
+                <!-- <textarea class="block w-full pr-20 mt-1 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input" id="text" name="text" rows="7" placeholder="Type your answer here." required></textarea> -->
+                <input id="text" name="text" rows="7" class="block w-full pr-20 mt-1 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input" placeholder="Type your answer here.">
+                <button type="submit" class="absolute inset-y-0 right-0 px-4 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-r-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                  Submit
+                </button>
+              </div>
+            </label>
+          </div>
+
+        </form>
+        {% else %}
+        <p><a href="{% url 'login' %}">Log in to answer this question</a></p>
+        {% endif %}
+
+        </div>     
+      </p>
+
+
+
+
+    </div>
+  </div>
+
+
+  {{ points|json_script:"points" }}
+  {{ upvoted|json_script:"upvoted" }}
+  {{ downvoted|json_script:"downvoted" }}
+  {{ answers_serialized|json_script:"answers_serialized" }}
+  
+  <script>
+    var points = JSON.parse(document.getElementById('points').textContent);
+    var upvoted = JSON.parse(document.getElementById('upvoted').textContent);
+    var downvoted = JSON.parse(document.getElementById('downvoted').textContent);
+    var answers = JSON.parse(document.getElementById('answers_serialized').textContent);
+  
+    function vote(voteType, voted, voteURL) {
+      var bodyFormData = new FormData();
+      if (voted) {
+        bodyFormData.set('vote_type', 'cancel_vote');
+      } else {
+        bodyFormData.set('vote_type', voteType);
+      }
+      axios({
+        method: 'post',
+        url: voteURL,
+        data: bodyFormData,
+        headers: {'Content-Type': 'multipart/form-data' }
+      }).then((response) => {
+        var voteType = response.data.vote_type;
+        var targetObj;
+        if('answer' in this){
+          targetObj = this.answer;
+        } else {
+          targetObj = this;
+        }
+        if (voteType == 'upvote') {
+          targetObj.upvoted = true;
+          targetObj.downvoted = false;
+        } else if (voteType == 'downvote') {
+          targetObj.upvoted = false;
+          targetObj.downvoted = true;
+        } else {
+          targetObj.upvoted = false;
+          targetObj.downvoted = false;
+        }
+        targetObj.points = response.data.points;
+      }).catch((error) => {
+        // 401: Not logged in (not authorized)
+        if(error.message.includes('401')) {
+          window.location.href = "{% url 'register' %}";
+        }
+        // We should get here when the request is not
+        // POST or the user's trying to vote on their own question. (400)
+      });
+    }
+  
+    Vue.component('answer', {
+      delimiters: ["[[", "]]"],
+      props: ['answer'],
+      methods: {vote: vote},
+      template: `
+      <div>
+        <hr class='answer-hr'/>
+        <div class='answer-block'>
+          <div class="answer-text" v-html="answer.text_html"></div>
+          <div class='text-secondary answer-sub'>
+            <span>[[ answer.user ]]</span>
+            <span class="separator">|</span>
+            <span>[[ answer.x_ago ]]</span>
+            <span class="separator">|</span>
+            <span v-if="answer.user != '{{current_user.username}}'">
+              <a href="javascript:void(0)" v-on:click="vote('upvote', answer.upvoted, '/answer/' + [[answer.id]] + '/vote')" class="text-secondary" :class="[[answer.upvoted ? 'done' : '']]">upvote</a>
+              <span class="separator">|</span>
+              <a href="javascript:void(0)" v-on:click="vote('downvote', answer.downvoted, '/answer/' + [[answer.id]] + '/vote')" class="text-secondary" :class="[[answer.downvoted ? 'done' : '']]">downvote</a>
+              <span class="separator">|</span>
+            </span>
+            <span>[[answer.points]] points</span>
+          </div>
+        </div>
+      </div>
+      `
+    })
+  
+    var app = new Vue({
+      delimiters: ["[[", "]]"],
+      el: '#question',
+      data: {
+        downvoted: downvoted,
+        upvoted: upvoted,
+        points: points,
+        answers: answers,
+      },
+      methods: {vote: vote}
+    });
+  </script>
+</div>
+{% endblock %}

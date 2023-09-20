@@ -1,0 +1,102 @@
+ <div id="app" hx-swap="innerHTML" hx-boost="true" class="container" >
+            <div class="card shadow-sm" style="margin-top: 20px">
+                <div class="card-header">
+                    <h6 style="margin-bottom: 0; margin-top: 7; display: inline-block">
+                        <a href="/" class="text-dark">VibrantCoder
+                            {% if not current_user.is_authenticated %}
+                            <span class="site-title-second-half"> - An open-source Q&A website for coders</span>
+                            {% endif %}
+                        </a>
+                    </h6>
+                    <span style="float: right">
+                        <span class="VibrantCoder-nav">
+                            <a href="{% url 'search' %}" class="text-dark">Search</a>
+                            {% if current_user.is_authenticated %}   
+                                | <a href="{% url 'my-questions' %}" class="text-dark">My Questions</a> |
+                                <a href="{% url 'my-answers' %}" class="text-dark">My Answers</a> |
+                                <a href="/question/new" class="text-dark" style="display: inline-block">
+                                    New Question
+                                </a>
+                            {% endif %}
+                        </span>
+                    </span>
+                </div>
+                <div class="pb-2 pt-4 pr-4 pl-4">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+        <div class="container text-right" style="max-width:700; padding-right:21; padding-top:2; font-size:14; color: #6c757d; margin-bottom: 7px;">
+                <a href="/" class="text-secondary">Home</a> | 
+            {% if current_user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="text-secondary">Log out ({{current_user.username}}, {{current_user.points}} points)</a> | 
+            {% else %}
+                <a href="{% url 'register' %}" class="text-secondary">Sign up</a> | 
+                <a href="{% url 'login' %}" class="text-secondary">log in</a> | 
+            {% endif %}
+            <a href="/about" class="text-secondary">About</a> |
+            <a href="/leaderboard" class="text-secondary">Leaderboard</a>
+        </div>
+
+
+
+
+
+
+        
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        <div class="container">
+            <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+            <a href="/" class="h2 d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none" style="font-weight: 900;">
+                CSQA
+            </a>
+            <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+                <li><a href="/" class="nav-link px-2 link-secondary">Home</a></li>
+                {% if current_user.is_authenticated %}   
+                    <li><a href="{% url 'my-questions' %}" class="nav-link px-2 link-dark">My Questions</a></li>
+                    <li><a href="{% url 'my-answers' %}" class="nav-link px-2 link-dark">My Answers</a></li>
+                    <li><a href="/question/new" class="nav-link px-2 link-dark">New Question</a></li>
+                    <li></li><a href="{% url 'search' %}"  class="nav-link px-2 link-dark">Search</a></li>
+
+                    {%else%}
+                    <a href="{% url 'search' %}"  class="nav-link px-2 link-dark">Search</a>
+                    <li><a href="/about" class="nav-link px-2 link-dark">About</a></li>
+                    <a href="/leaderboard"  class="nav-link px-2 link-dark">Leaderboard</a>
+                {% endif %}
+            </ul>
+
+            <div class="col-md-3 text-end">
+                {% if current_user.is_authenticated %}
+                <div class="flex-shrink-0 dropdown">
+                    <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" style="text-transform:capitalize;font-size:medium;font-weight:800;" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{current_user.username}}
+                    </a>
+                    <ul class="dropdown-menu text-small shadow " aria-labelledby="dropdownUser2">
+                        <li><a href="/about" class="dropdown-item">About</a></li>
+                        <li></li><a href="/leaderboard"  class="dropdown-item">Leaderboard</a></li>
+                        <li></li><a href="#"  class="dropdown-item">{{current_user.points}} points</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <a href="{% url 'logout' %}" class="dropdown-item">Log out </a>
+                    </ul>
+                  </div>
+                  
+                {% else %}
+                    <a href="{% url 'register' %}" class="btn btn-primary">Sign up</a>
+                    <a href="{% url 'login' %}" class="btn btn-outline-primary me-2">log in</a>
+                {% endif %}
+            </div>
+            </header>
+        </div>

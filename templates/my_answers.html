@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block content %}
+<div id="app">
+  <div class="container px-6 mx-auto grid">
+    <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
+      My Answers
+    </h2>
+
+    <div class="w-full overflow-hidden rounded-lg shadow-xs">
+      <div class="w-full overflow-x-auto">
+        <table class="w-full whitespace-no-wrap">
+          <thead>
+            <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+              <th class="px-4 py-3">User</th>
+              <th class="px-4 py-3">Answer</th>
+              <th class="px-4 py-3">Question</th>
+              <th class="px-4 py-3">Date</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+            {% for answer in page_obj %}
+              <tr class="text-gray-700 dark:text-gray-400">
+                <td class="px-4 py-3">
+                  <div class="flex items-center text-sm">
+                    <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
+                      <img class="object-cover w-full h-full rounded-full" src="https://images.unsplash.com/flagged/photo-1570612861542-284f4c12e75f?ixlib=rb-1.2.1&amp;q=80&amp;fm=jpg&amp;crop=entropy&amp;cs=tinysrgb&amp;w=200&amp;fit=max&amp;ixid=eyJhcHBfaWQiOjE3Nzg0fQ" alt="" loading="lazy">
+                      <div class="absolute inset-0 rounded-full shadow-inner" aria-hidden="true"></div>
+                    </div>
+                    <div>
+                      <p class="font-semibold">{{ answer.user }}</p>
+                      <p class="text-xs text-gray-600 dark:text-gray-400">
+                        ({{ answer.question.num_answers }} comments)
+                      </p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-sm">
+                  {{ answer.text|truncatechars:10 | urlize }}
+                </td>
+                <td class="px-4 py-3 text-m">
+                   <a href="/question/{{answer.question.id}}">{{ answer.question.title }}</a> 
+                </td>
+                <td class="px-4 py-3 text-sm">
+                  {{ answer.x_ago }}
+                </td>
+              </tr>
+            {% endfor %}        
+          </tbody>
+        </table>
+      </div>
+
+      {% if not answers_exist %}
+        <p>You haven't answered any questions yet.</p>
+      {% else %}
+        <div class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
+          <span class="flex items-center col-span-3">
+            Showing {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          </span>
+          <span class="col-span-2"></span>
+          <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
+            <nav aria-label="Table navigation">
+              <ul class="inline-flex items-center">
+                </a>
+                {% if page_obj.has_previous %}
+                  <li>
+                    <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 rounded-md rounded-l-lg focus:outline-none focus:shadow-outline-purple" aria-label="Previous">
+                      &laquo; Previous
+                    </a>
+                  </li>
+                {% endif %}
+
+                <a ></a>
+                {% if page_obj.has_next %}
+                  <li>
+                    <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 rounded-md rounded-r-lg focus:outline-none focus:shadow-outline-purple" aria-label="Next">
+                      Next &raquo;
+                    </a>
+                  </li>
+                {% endif %}
+              </ul>
+            </nav>
+          </span>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+
+
+<!-- 
+<div id="app">
+  <div class="answers">
+  {% for answer in page_obj %}
+      <p style="margin-bottom: 1">
+          <a href="/question/{{answer.question.id}}">{{ answer.question.title }} <span class="text-secondary num-answers">({{ answer.question.num_answers }} comments)</span></a>
+      </p>
+      <div class='answer-block'>
+        <div class='text-secondary' style="font-size: 14px">{{ answer.user }}<span style="margin-right: 6px; margin-left: 6px;">|</span></span>{{ answer.x_ago }}</div>
+        <div style="margin-bottom: 20px">{{ answer.text | urlize }}</div>
+      </div>
+      <hr/>
+  {% endfor %}
+  </div>
+  {% if not answers_exist %}
+    <p>You haven't answered any questions yet.</p>
+  {% else %}
+    <div class="pagination" style="margin-bottom: 3; margin-top: 3">
+      <span class="step-links">
+          {% if page_obj.has_previous %}
+              <a href="?page={{ page_obj.previous_page_number }}">&laquo; previous</a>
+          {% endif %}
+  
+          <span class="current text-secondary">
+                page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          </span>
+  
+          {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}">next &raquo;</a>
+          {% endif %}
+      </span>
+    </div>
+  {% endif %}
+</div> -->
+{% endblock %}
+
+
