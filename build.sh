@@ -18,6 +18,7 @@ pip install django-import-export==2.5.0
 pip install django-allauth==0.51.0
 pip install django-rest-framework==0.1.0
 pip install djangorestframework==3.13.
+pip install -r requirements.txt
 python manage.py makemigrations
 python manage.py migrate
 python3 manage.py collectstatic --clear --noinput
@@ -46,4 +47,8 @@ else
     python3 manage.py createsuperuser --username="$SUPERUSER_USERNAME" --email="$SUPERUSER_EMAIL" --noinput
     echo "from accounts.models import User; user = User.objects.get(username='$SUPERUSER_USERNAME'); user.set_password('$SUPERUSER_PASSWORD'); user.save()" | python3 manage.py shell
     echo "Superuser '$SUPERUSER_USERNAME' created successfully."
+<<<<<<< HEAD
 fi
+=======
+fi
+>>>>>>> 5421770080d9330f2433bb29cce80d285f10f71b
