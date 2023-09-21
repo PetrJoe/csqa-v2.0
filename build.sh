@@ -25,9 +25,9 @@ python3 manage.py collectstatic --clear --noinput
 python3 manage.py collectstatic --noinput
 
 
-SUPERUSER_USERNAME="PetrJoe"
-SUPERUSER_EMAIL="petrjoe01@gmail.com"
-SUPERUSER_PASSWORD="Educational@01"
+SUPERUSER_USERNAME=" "
+SUPERUSER_EMAIL=" "
+SUPERUSER_PASSWORD=" "
 
 
 
